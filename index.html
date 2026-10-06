@@ -1,0 +1,2023 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Trio Constructions</title>
+    <meta name="theme-color" content="#FBF9F6" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="icon-192.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      header {
+        backdrop-filter: blur(10px);
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+      }
+      .usr {
+        position: relative;
+      }
+      .usr-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 4px 13px 4px 5px;
+        border: 1px solid rgba(118, 87, 232, 0.16);
+        border-radius: 18px;
+        background: color-mix(in srgb, var(--surf) 92%, var(--tonal));
+        color: var(--ink);
+        box-shadow: 0 8px 24px rgba(76, 53, 145, 0.08);
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      }
+      .usr-btn:hover {
+        background: var(--surf);
+        border-color: color-mix(in srgb, var(--acc) 35%, var(--line));
+        filter: none;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 30px rgba(76, 53, 145, 0.14);
+      }
+      .av-wrap {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        border-radius: 14px;
+        padding: 2px;
+        background: linear-gradient(135deg, #a58aff, #ffb86b, #79d9bd);
+        box-shadow: 0 5px 14px rgba(118, 87, 232, .2);
+      }
+      .av {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: 12px;
+        background: var(--tonal);
+        object-fit: cover;
+        border: 2px solid var(--surf);
+      }
+      .usr-txt {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        line-height: 1.15;
+        min-width: 76px;
+      }
+      .usr-txt b {
+        font-size: .88rem;
+        font-weight: 700;
+        letter-spacing: -.01em;
+      }
+      .usr-txt small {
+        margin-top: 4px;
+        font-size: .68rem;
+        color: var(--ok);
+        font-weight: 600;
+      }
+      .usr-chevron {
+        color: var(--mute);
+        font-size: .75rem;
+        margin-left: 2px;
+        transition: transform .2s ease;
+      }
+      .usr-btn[aria-expanded="true"] .usr-chevron {
+        transform: rotate(180deg);
+      }
+      .usr-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 10px);
+        width: 285px;
+        z-index: 40;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px;
+        background: color-mix(in srgb, var(--surf) 94%, var(--tonal));
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: 0 22px 55px rgba(45, 31, 82, .18);
+        backdrop-filter: blur(20px);
+        animation: menuIn .18s ease both;
+      }
+      @keyframes menuIn {
+        from { opacity: 0; transform: translateY(-5px) scale(.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .usr-menu[hidden], .usr[hidden] { display: none; }
+      .usr-menu button {
+        width: 100%;
+        min-height: 44px;
+        text-align: left;
+        border-radius: 13px;
+      }
+      .usr-menu .menu-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 8px 12px;
+        margin-bottom: 3px;
+        border-bottom: 1px solid var(--line);
+      }
+      .menu-profile .menu-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        object-fit: cover;
+        background: var(--tonal);
+      }
+      .menu-profile strong { display: block; font-size: .9rem; }
+      .menu-profile span { display: block; margin-top: 3px; color: var(--mute); font-size: .72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 205px; }
+      .usr-menu .ghost {
+        border-color: transparent;
+        background: transparent;
+        color: var(--ink);
+      }
+      .usr-menu .ghost:hover {
+        background: var(--soft);
+        color: var(--on-tonal);
+      }
+      .usr-menu .del {
+        margin-top: 3px;
+        border-top: 1px solid var(--line);
+        padding-top: 6px;
+        color: var(--bad);
+      }
+            @media (max-width: 480px) {
+        .usr-txt { display: none; }
+        .usr-chevron { display: none; }
+        .usr-btn { padding: 4px; border-radius: 15px; }
+        .usr-menu { right: -4px; width: min(285px, calc(100vw - 20px)); }
+      }
+      :root {
+        --bg: #f7f4ff;
+        --surf: #ffffff;
+        --surf-2: #fbfaff;
+        --ink: #211b35;
+        --mute: #716b83;
+        --line: #e9e3f4;
+        --soft: #f3efff;
+        --acc: #7657e8;
+        --acc-2: #9b7cff;
+        --on-acc: #ffffff;
+        --tonal: #eee9ff;
+        --on-tonal: #5940b9;
+        --bad: #d95768;
+        --ok: #26966f;
+        --warm: #ffb86b;
+        color-scheme: light;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #171323;
+        --surf: #211a31;
+        --surf-2: #271f3a;
+        --ink: #f4efff;
+        --mute: #b6adc8;
+        --line: #39304b;
+        --soft: #2b2340;
+        --acc: #a58aff;
+        --acc-2: #c2adff;
+        --on-acc: #21183d;
+        --tonal: #342957;
+        --on-tonal: #e3d9ff;
+        --bad: #ff8b9a;
+        --ok: #69d3ac;
+        --warm: #ffc47d;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html {
+        scroll-padding-top: calc(72px + env(safe-area-inset-top, 0px));
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          400 16px/1.5 "Google Sans Text",
+          "Google Sans",
+          Roboto,
+          system-ui,
+          sans-serif;
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+        padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+      }
+      ::selection {
+        background: var(--tonal);
+        color: var(--on-tonal);
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Google Sans", Roboto, system-ui, sans-serif;
+        font-weight: 500;
+        margin: 0;
+        text-wrap: balance;
+      }
+      h1 {
+        display: flex;
+        align-items: center;
+        font-size: 1.25rem;
+      }
+      h2 {
+        font-size: 1.125rem;
+        margin-bottom: 0.9rem;
+      }
+      h3 {
+        font-size: 1.0625rem;
+      }
+      .mark {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        margin-right: 12px;
+        border-radius: 10px;
+        background: var(--acc);
+        color: var(--on-acc);
+        font:
+          500 1.05rem "Google Sans",
+          Roboto,
+          sans-serif;
+      }
+      header {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+      }
+      header > span {
+        display: flex;
+        gap: 4px;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 20px 16px;
+      }
+      .card {
+        background: var(--surf);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .row > * {
+        flex: 1 1 150px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .stat {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 2px;
+        background: var(--surf);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+      }
+      .stat b {
+        font:
+          400 1.65rem/1.25 "Google Sans",
+          Roboto,
+          sans-serif;
+      }
+      .stat span,
+      .mute {
+        color: var(--mute);
+        font-size: 0.875rem;
+      }
+      label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--mute);
+        margin-bottom: 6px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        font: inherit;
+        color: var(--ink);
+        background: var(--surf);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 14px;
+        min-height: 48px;
+        transition: border-color 0.15s;
+      }
+      input:hover,
+      select:hover,
+      textarea:hover {
+        border-color: var(--mute);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--acc);
+        box-shadow: inset 0 0 0 1px var(--acc);
+      }
+      input[type="range"] {
+        padding: 0;
+        border: 0;
+        min-height: 32px;
+        accent-color: var(--acc);
+        background: none;
+        box-shadow: none;
+      }
+      input[type="file"] {
+        padding: 8px 10px;
+        font-size: 0.875rem;
+      }
+      button {
+        font:
+          500 0.9375rem "Google Sans",
+          Roboto,
+          sans-serif;
+        min-height: 44px;
+        padding: 0 24px;
+        border-radius: 99px;
+        border: 1px solid transparent;
+        background: var(--acc);
+        color: var(--on-acc);
+        cursor: pointer;
+        transition:
+          filter 0.15s,
+          background 0.15s;
+      }
+      button:hover {
+        filter: brightness(1.08);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--acc);
+        border-color: var(--line);
+        padding: 0 18px;
+      }
+      button.ghost:hover,
+      a.btn:hover {
+        background: var(--soft);
+        filter: none;
+      }
+      button.del {
+        background: transparent;
+        color: var(--bad);
+        min-height: 36px;
+        padding: 0 12px;
+        font-weight: 500;
+      }
+      button.del:hover {
+        background: var(--soft);
+        filter: none;
+      }
+      header button.ghost {
+        border-color: transparent;
+        min-height: 40px;
+        padding: 0 14px;
+      }
+      :focus-visible {
+        outline: 2px solid var(--acc);
+        outline-offset: 2px;
+      }
+      .bar {
+        height: 6px;
+        background: var(--soft);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: var(--acc);
+        border-radius: 99px;
+      }
+      .line {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .line:last-child {
+        border: none;
+        padding-bottom: 0;
+      }
+      .empty {
+        text-align: center;
+        padding: 30px 16px;
+        color: var(--mute);
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+      }
+      .card.empty {
+        background: transparent;
+      }
+      /* =========================
+         FIXED SIDEBAR NAVIGATION
+         ========================= */
+
+      body {
+        padding-bottom: 0;
+        padding-left: 88px;
+      }
+
+      header {
+        position: fixed;
+        top: env(safe-area-inset-top, 0px);
+        left: 88px;
+        right: 0;
+        z-index: 18;
+        min-height: 64px;
+      }
+
+      nav {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: 88px;
+        max-width: 88px;
+        margin: 0;
+        padding: 18px 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 8px;
+        background: var(--surf);
+        border-right: 1px solid var(--line);
+        z-index: 20;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      nav button {
+        width: 72px;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        background: transparent;
+        color: var(--mute);
+        border: 0;
+        border-radius: 14px;
+        min-height: 62px;
+        padding: 6px 4px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        transition:
+          background 0.2s ease,
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      nav button:hover {
+        background: var(--soft);
+        filter: none;
+        color: var(--ink);
+        transform: translateY(-1px);
+      }
+
+      nav button[aria-current="page"] {
+        color: var(--on-tonal);
+      }
+
+      nav button[aria-current="page"] .ic {
+        background: var(--tonal);
+        color: var(--on-tonal);
+      }
+
+      nav .ic {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 34px;
+        border-radius: 17px;
+        transition:
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 88px 28px 28px;
+      }
+
+      /* Mobile bottom navigation */
+      @media (max-width: 700px) {
+        body {
+          padding-left: 0;
+          padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+        }
+
+        header {
+          left: 0;
+          right: 0;
+          min-height: 60px;
+        }
+
+        nav {
+          inset: auto 0 0 0;
+          width: 100%;
+          max-width: none;
+          height: auto;
+          min-height: 70px;
+          flex-direction: row;
+          justify-content: space-around;
+          align-items: stretch;
+          gap: 2px;
+          border-right: 0;
+          border-top: 1px solid var(--line);
+          padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+          overflow: visible;
+          z-index: 25;
+        }
+
+        nav button {
+          width: auto;
+          flex: 1 1 0;
+          min-width: 0;
+          min-height: 58px;
+          padding: 3px 2px;
+          gap: 4px;
+          font-size: 0.68rem;
+          transform: none;
+        }
+
+        nav button:hover {
+          background: transparent;
+          transform: none;
+        }
+
+        nav .ic {
+          width: 48px;
+          height: 30px;
+        }
+
+        main {
+          padding: 76px 16px 20px;
+        }
+      }
+
+      #toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+        width: max-content;
+        max-width: calc(100% - 32px);
+        background: #323232;
+        color: #f1f3f4;
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        display: none;
+        z-index: 30;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 10px;
+        background: var(--soft);
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--mute);
+      }
+      .pill.over {
+        background: color-mix(in srgb, var(--bad) 12%, transparent);
+        color: var(--bad);
+      }
+      .over {
+        color: var(--bad);
+      }
+      .rcpt {
+        width: 44px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 8px;
+        vertical-align: middle;
+        cursor: zoom-in;
+        margin-left: 8px;
+        border: 1px solid var(--line);
+      }
+      .rcpt.big {
+        position: fixed;
+        inset: 5%;
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 40;
+        border-radius: 16px;
+        cursor: zoom-out;
+        margin: 0;
+      }
+      a.btn {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        color: var(--acc);
+        text-decoration: none;
+        font:
+          500 0.9375rem "Google Sans",
+          Roboto,
+          sans-serif;
+      }
+      .welcome {
+        background: var(--tonal);
+        border-color: transparent;
+        border-radius: 20px;
+        padding: 24px;
+      }
+      .welcome h2 {
+        font-size: 1.75rem;
+        font-weight: 400;
+        margin-bottom: 0.4rem;
+        color: var(--on-tonal);
+      }
+      .welcome p,
+      .welcome .mute {
+        color: var(--on-tonal);
+        font-size: 1rem;
+      }
+      .welcome .mute {
+        opacity: 0.75;
+        font-size: 0.875rem;
+      }
+      .welcome input {
+        background: var(--surf);
+      }
+
+      /* =========================================
+         PREMIUM LOGIN SCREEN
+         ========================================= */
+      #login {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        min-height: 100dvh;
+        overscroll-behavior: contain;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background:
+          radial-gradient(
+            circle at 15% 20%,
+            color-mix(in srgb, var(--acc) 10%, transparent),
+            transparent 35%
+          ),
+          radial-gradient(
+            circle at 85% 80%,
+            color-mix(in srgb, var(--acc) 8%, transparent),
+            transparent 35%
+          ),
+          var(--bg);
+        overflow-y: auto;
+      }
+      .login-shell {
+        width: 100%;
+        max-width: 1050px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        background: var(--surf);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.08),
+          0 8px 30px rgba(0, 0, 0, 0.04);
+      }
+      .login-welcome {
+        position: relative;
+        min-height: 620px;
+        padding: 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: #ffffff;
+        background: linear-gradient(
+          135deg,
+          rgba(10, 55, 105, 0.96),
+          rgba(26, 115, 232, 0.9)
+        );
+        overflow: hidden;
+      }
+      .login-welcome::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: linear-gradient(to bottom right, black, transparent);
+        pointer-events: none;
+      }
+      .login-welcome::after {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        right: -180px;
+        bottom: -180px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 50px rgba(255, 255, 255, 0.03),
+          0 0 0 100px rgba(255, 255, 255, 0.02);
+        pointer-events: none;
+      }
+      .login-welcome > * {
+        position: relative;
+        z-index: 1;
+      }
+      .login-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.05rem;
+        font-weight: 500;
+      }
+      .login-brand .brand-mark {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 1.15rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+      }
+      .login-welcome-content {
+        max-width: 520px;
+      }
+      .login-welcome-content .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.78;
+      }
+      .login-welcome-content .eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: currentColor;
+      }
+      .login-welcome-content h1 {
+        display: block;
+        margin: 0 0 18px;
+        font-size: clamp(2.5rem, 4vw, 4rem);
+        line-height: 1.05;
+        font-weight: 400;
+        letter-spacing: -0.04em;
+      }
+      .login-welcome-content p {
+        margin: 0;
+        max-width: 470px;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.78);
+      }
+      .login-features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 38px;
+      }
+      .login-feature {
+        padding: 16px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+      }
+      .login-feature strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+      .login-feature span {
+        display: block;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.62);
+      }
+      .login-welcome-footer {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .login-panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 56px 48px;
+        background: var(--surf);
+      }
+      #login form {
+        width: 100%;
+        max-width: 390px;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        text-align: left;
+      }
+      #login .login-form-header {
+        margin-bottom: 30px;
+      }
+      #login .mark {
+        display: grid;
+        margin: 0 0 20px;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        font-size: 1.25rem;
+        box-shadow: 0 8px 20px rgba(26, 115, 232, 0.18);
+      }
+      #login h2 {
+        margin: 0 0 7px;
+        font-size: 2rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        text-align: left;
+      }
+      #login .login-subtitle {
+        margin: 0;
+        color: var(--mute);
+        font-size: 0.92rem;
+      }
+      .login-field {
+        margin-bottom: 18px;
+      }
+      .login-field label {
+        margin-bottom: 7px;
+        color: var(--ink);
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      #login input {
+        min-height: 52px;
+        border-radius: 12px;
+        padding: 0 15px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+      #login input:hover {
+        border-color: var(--mute);
+      }
+      #login input:focus {
+        background: var(--surf);
+        border-color: var(--acc);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 12%, transparent);
+      }
+      #login #le {
+        min-height: 22px;
+        margin: 4px 0 12px;
+        font-size: 0.82rem;
+      }
+      #login form > button {
+        width: 100%;
+        min-height: 52px;
+        margin-top: 4px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        box-shadow: 0 8px 20px color-mix(in srgb, var(--acc) 20%, transparent);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          filter 0.2s ease;
+      }
+      #login form > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 28px color-mix(in srgb, var(--acc) 25%, transparent);
+      }
+      .login-security {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 20px;
+        color: var(--mute);
+        font-size: 0.75rem;
+      }
+      .login-security::before {
+        content: "✓";
+        display: grid;
+        place-items: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--soft);
+        color: var(--ok);
+        font-size: 0.65rem;
+        font-weight: 700;
+      }
+      @media (max-width: 800px) {
+        #login {
+          padding: 16px;
+        }
+        .login-shell {
+          grid-template-columns: 1fr;
+          max-width: 480px;
+          border-radius: 24px;
+        }
+        .login-welcome {
+          min-height: auto;
+          padding: 32px;
+        }
+        .login-welcome-content {
+          margin-top: 45px;
+        }
+        .login-welcome-content h1 {
+          font-size: 2.4rem;
+        }
+        .login-features {
+          display: none;
+        }
+        .login-welcome-footer {
+          margin-top: 35px;
+        }
+        .login-panel {
+          padding: 36px 28px;
+        }
+      }
+      @media (max-width: 480px) {
+        #login {
+          padding: 10px;
+          align-items: flex-start;
+        }
+        .login-welcome {
+          padding: 26px;
+        }
+        .login-welcome-content h1 {
+          font-size: 2rem;
+        }
+        .login-welcome-content p {
+          font-size: 0.9rem;
+        }
+        .login-panel {
+          padding: 32px 22px;
+        }
+        #login h2 {
+          font-size: 1.65rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1><span class="mark" aria-hidden="true">T</span>Trio Constructions</h1>
+      <div class="usr" id="usr" hidden>
+        <button
+          class="usr-btn"
+          id="ub"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <span class="av-wrap"><img id="ua" class="av" alt="Profile avatar" width="40" height="40" /></span>
+          <span class="usr-txt"><b id="un"></b><small>● Online</small></span>
+          <span class="usr-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="usr-menu" id="um" hidden>
+          <div class="menu-profile">
+            <img id="uma" class="menu-avatar" alt="Profile avatar" />
+            <div><strong id="umn"></strong><span id="ue"></span></div>
+          </div>
+          <button class="ghost" id="ush">✨ Change avatar</button>
+          <button class="ghost" id="tg">🌙 Appearance</button>
+          <button class="ghost" data-act="partners">
+            ✏️ Edit partner names
+          </button>
+          <button class="del" id="so">Sign out</button>
+        </div>
+      </div>
+    </header>
+    <div id="login">
+      <div class="login-shell">
+        <div class="login-welcome">
+          <div class="login-brand">
+            <span class="brand-mark">T</span>Trio Constructions
+          </div>
+          <div class="login-welcome-content">
+            <div class="eyebrow">Site operations</div>
+            <h1>Build smarter. Track every site.</h1>
+            <p>
+              Monitor progress, expenses, tasks, and client follow-ups from one
+              clean job-site ledger.
+            </p>
+            <div class="login-features">
+              <div class="login-feature">
+                <strong>Live sites</strong>
+                <span>Track cost, status, and progress</span>
+              </div>
+              <div class="login-feature">
+                <strong>Task flow</strong>
+                <span>Keep daily work and meetings on schedule</span>
+              </div>
+              <div class="login-feature">
+                <strong>Finance</strong>
+                <span>Review payments, spending, and budgets</span>
+              </div>
+            </div>
+          </div>
+          <div class="login-welcome-footer">
+            Secure cloud sync for field teams and site managers.
+          </div>
+        </div>
+        <div class="login-panel">
+          <form id="lf" novalidate>
+            <div class="login-form-header">
+              <div class="mark" aria-hidden="true">T</div>
+              <h2>Welcome back</h2>
+              <p class="login-subtitle">
+                Sign in to continue managing your active sites.
+              </p>
+            </div>
+            <div class="login-field">
+              <label for="em">Email</label>
+              <input
+                id="em"
+                name="em"
+                type="email"
+                autocomplete="email"
+                placeholder="you@company.com"
+                required
+              />
+            </div>
+            <div class="login-field">
+              <label for="pw">Password</label>
+              <input
+                id="pw"
+                name="pw"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div id="le" aria-live="polite"></div>
+            <button type="submit">Sign in</button>
+            <div class="login-security">Secure access</div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="toast" role="status"></div>
+    <main id="v"></main>
+    <nav id="nav"></nav>
+    <script>
+      const KEY = "site-ledger.v1";
+      let S = null;
+      S = S || {
+        partners: ["Partner 1", "Partner 2", "Partner 3"],
+        sites: [],
+        expenses: [],
+        meetings: [],
+      };
+      ["payments", "logs", "tasks", "contacts"].forEach(
+        (k) => (S[k] = S[k] || []),
+      );
+      let syncHook = null;
+      const save = () => {
+        if (syncHook) syncHook();
+      };
+      const $ = (s) => document.querySelector(s);
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const inr = (n) =>
+        "₹" + new Intl.NumberFormat("en-IN").format(Math.round(n || 0));
+      const uid = () => Math.random().toString(36).slice(2, 9);
+      const today = () => new Date().toLocaleDateString("en-CA");
+      const fdt = (d) =>
+        new Date(d).toLocaleString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "numeric",
+          minute: "2-digit",
+        });
+      const spent = (id) =>
+        S.expenses.filter((e) => e.site === id).reduce((a, e) => a + e.amt, 0);
+      const prog = (s) =>
+        s.stages.length
+          ? Math.round(s.stages.reduce((a, t) => a + t.p, 0) / s.stages.length)
+          : 0;
+      const sname = (id) =>
+        (S.sites.find((s) => s.id === id) || { name: "Removed site" }).name;
+      const CATS = ["Material", "Labour", "Transport", "Machinery", "Other"];
+      const PK = ["Billed", "Received", "Retention held"],
+        TK = ["Task", "Snag / defect", "Payment due"];
+      const pay = (id, k) =>
+        S.payments
+          .filter((p) => p.site === id && p.kind === k)
+          .reduce((a, p) => a + p.amt, 0);
+      const tot = (k) =>
+        S.payments.filter((p) => p.kind === k).reduce((a, p) => a + p.amt, 0);
+      const shrink = (f) =>
+        new Promise((r) => {
+          const fr = new FileReader();
+          fr.onload = () => {
+            const i = new Image();
+            i.onload = () => {
+              const k = Math.min(1, 640 / Math.max(i.width, i.height)),
+                c = document.createElement("canvas");
+              c.width = i.width * k;
+              c.height = i.height * k;
+              c.getContext("2d").drawImage(i, 0, 0, c.width, c.height);
+              r(c.toDataURL("image/jpeg", 0.6));
+            };
+            i.onerror = () => r(null);
+            i.src = fr.result;
+          };
+          fr.onerror = () => r(null);
+          fr.readAsDataURL(f);
+        });
+      const rep = (s) =>
+        encodeURIComponent(
+          `*${s.name}*\nProgress: ${prog(s)}%\nBudget: ${inr(s.budget)}\nSpent: ${inr(spent(s.id))}\nReceived from client: ${inr(pay(s.id, "Received"))}\nPending from client: ${inr(pay(s.id, "Billed") - pay(s.id, "Received"))}`,
+        );
+      const STD = [
+        "Excavation",
+        "Foundation",
+        "Columns",
+        "Slab",
+        "Brickwork",
+        "Plaster",
+        "Finishing",
+      ];
+      let ME = "",
+        q = "",
+        qr = "",
+        fc = "all",
+        tab = "home",
+        open = null,
+        flt = "all";
+      const opts = (a, sel) =>
+        a
+          .map(
+            ([v, l]) =>
+              `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(l)}</option>`,
+          )
+          .join("");
+      const siteOpts = (sel) =>
+        opts(
+          S.sites.map((s) => [s.id, s.name]),
+          sel,
+        );
+      const partOpts = () => opts(S.partners.map((p, i) => [String(i), p]));
+      const bar = (p) =>
+        `<div class="bar" role="img" aria-label="${p}% done"><i style="width:${p}%"></i></div>`;
+
+      const warn = (s) => {
+        const r = s.budget ? spent(s.id) / s.budget : 0;
+        return r >= 1
+          ? '<span class="pill over">Over budget</span>'
+          : r >= 0.8
+            ? '<span class="pill over">' +
+              Math.round(r * 100) +
+              "% of budget used</span>"
+            : "";
+      };
+      function backup() {
+        if (!window.XLSX) {
+          toast("Excel tool did not load. Check your internet and try again.");
+          return;
+        }
+        const wb = XLSX.utils.book_new(),
+          add = (n, r) =>
+            XLSX.utils.book_append_sheet(
+              wb,
+              XLSX.utils.json_to_sheet(r.length ? r : [{}]),
+              n,
+            );
+        add(
+          "Sites",
+          S.sites.map((s) => ({
+            Site: s.name,
+            Client: s.client,
+            Location: s.loc,
+            Budget: s.budget,
+            Spent: spent(s.id),
+            Received: pay(s.id, "Received"),
+            Progress: prog(s) + "%",
+          })),
+        );
+        add(
+          "Expenses",
+          S.expenses.map((e) => ({
+            Date: e.date,
+            Site: sname(e.site),
+            Category: e.cat,
+            Amount: e.amt,
+            PaidBy: S.partners[e.by],
+            Note: e.note,
+          })),
+        );
+        add(
+          "Payments",
+          S.payments.map((x) => ({
+            Date: x.date,
+            Site: sname(x.site),
+            Type: x.kind,
+            Amount: x.amt,
+          })),
+        );
+        add(
+          "Tasks",
+          S.tasks.map((t) => ({
+            Task: t.t,
+            Type: t.k,
+            Site: t.s ? sname(t.s) : "General",
+            Owner: S.partners[t.o],
+            Due: t.due,
+            Done: t.done ? "Yes" : "No",
+          })),
+        );
+        add(
+          "Meetings",
+          S.meetings.map((m) => ({
+            Title: m.title,
+            Site: m.site ? sname(m.site) : "General",
+            When: m.dt,
+            Done: m.done ? "Yes" : "No",
+          })),
+        );
+        XLSX.writeFile(wb, "trio-constructions-" + today() + ".xlsx");
+      }
+      function welcome() {
+        const t = today(),
+          h = new Date().getHours(),
+          g =
+            h < 12
+              ? "Good morning"
+              : h < 17
+                ? "Good afternoon"
+                : "Good evening";
+        const od = S.tasks.filter((x) => !x.done && x.due && x.due < t).length,
+          mt = S.meetings.filter(
+            (m) => !m.done && m.dt.slice(0, 10) === t,
+          ).length,
+          pend = tot("Billed") - tot("Received"),
+          bits = [];
+        if (od)
+          bits.push(od + (od > 1 ? " tasks are" : " task is") + " overdue");
+        if (mt) bits.push(mt + (mt > 1 ? " meetings" : " meeting") + " today");
+        if (pend > 0) bits.push(inr(pend) + " still pending from clients");
+        const nb = S.sites.filter(
+          (x) => x.budget && spent(x.id) / x.budget >= 0.8,
+        ).length;
+        if (nb)
+          bits.push(
+            nb + (nb > 1 ? " sites are" : " site is") + " near or over budget",
+          );
+        const msg = bits.length
+          ? (bits.length > 1
+              ? bits.slice(0, -1).join(", ") + " and " + bits[bits.length - 1]
+              : bits[0]) + "."
+          : "All clear for today. Here is how your sites are doing.";
+        const Q = [
+          "Measure twice, pour once.",
+          "Strong foundations make strong partnerships.",
+          "Log today's work while it is fresh.",
+          "A clear record today saves an argument tomorrow.",
+          "Small steps on site add up to big handovers.",
+        ];
+        return `<div class="card welcome"><h2>${g}${ME ? ", " + esc(ME.split(" ")[0]) : ""}</h2><p style="margin:0 0 6px">${msg}</p><p class="mute" style="margin:0"><i>${Q[new Date().getDate() % Q.length]}</i></p>${ME ? "" : '<form data-form="name" class="row" style="margin-top:12px"><input name="n" placeholder="What should we call you?" aria-label="Your name" required><button>Save name</button></form>'}</div>`;
+      }
+      function home() {
+        const bud = S.sites.reduce((a, s) => a + s.budget, 0),
+          sp = S.expenses.reduce((a, e) => a + e.amt, 0);
+        const paid = S.partners.map((p, i) => [
+          p,
+          S.expenses.filter((e) => e.by == i).reduce((a, e) => a + e.amt, 0),
+        ]);
+        const share = sp / 3;
+        const up = S.meetings
+          .filter((m) => !m.done)
+          .sort((a, b) => a.dt.localeCompare(b.dt))
+          .slice(0, 3);
+        return (
+          welcome() +
+          `<div class="stats"><div class="stat"><b>${S.sites.length}</b><span>Active sites</span></div>
+  <div class="stat"><b>${inr(sp)}</b><span>Total spent</span></div>
+  <div class="stat"><b class="${sp > bud && bud ? "over" : ""}">${inr(bud - sp)}</b><span>Budget left</span></div>
+  <div class="stat"><b>${inr(tot("Billed") - tot("Received"))}</b><span>Pending from clients</span></div>
+  <div class="stat"><b class="${S.tasks.some((t) => !t.done && t.due && t.due < today()) ? "over" : ""}">${S.tasks.filter((t) => !t.done).length}</b><span>Open tasks</span></div></div>
+  <div class="card"><h2>Who paid what</h2>${paid.map(([p, a]) => `<div class="line"><span>${esc(p)}</span><span><b>${inr(a)}</b> <span class="mute">${a >= share ? "gets back" : "owes"} ${inr(Math.abs(a - share))}</span></span></div>`).join("")}
+  <p class="mute" style="margin:8px 0 0">Equal three-way split of all expenses.</p></div>
+  <div class="card"><h2>Sites</h2>${S.sites.length ? S.sites.map((s) => `<div class="line" style="display:block"><div class="line" style="border:0;padding:0 0 6px"><span><b>${esc(s.name)}</b> ${warn(s)}</span><span class="mute">${prog(s)}% done · ${inr(spent(s.id))} of ${inr(s.budget)}</span></div>${bar(prog(s))}</div>`).join("") : '<div class="empty">No sites yet. Add your first site to start tracking.<br><br><button data-tab="sites">Add a site</button></div>'}</div>
+  <div class="card"><h2>Next meetings</h2>${up.length ? up.map((m) => `<div class="line"><span><b>${esc(m.title)}</b><br><span class="mute">${esc(sname(m.site))}</span></span><span>${fdt(m.dt)}</span></div>`).join("") : '<div class="empty">No meetings scheduled.</div>'}</div>
+  <div class="card"><h2>Backup</h2><p class="mute">Download all sites, expenses, payments, tasks and meetings as an Excel file.</p><button class="ghost" data-act="backup">Download Excel backup</button></div>`
+        );
+      }
+
+      function sites() {
+        if (open) {
+          const s = S.sites.find((x) => x.id === open);
+          if (s) return detail(s);
+          open = null;
+        }
+        return `<div class="card"><h2>Add a site</h2><form data-form="site"><div class="row">
+  <div><label for="n">Site name</label><input id="n" name="n" required></div>
+  <div><label for="c">Client</label><input id="c" name="c"></div>
+  <div><label for="l">Location</label><input id="l" name="l"></div>
+  <div><label for="b">Budget (₹)</label><input id="b" name="b" type="number" min="0" inputmode="numeric" required></div></div>
+  <p><button>Save site</button></p></form></div>
+  ${S.sites.length ? S.sites.map((s) => `<div class="card"><div class="line" style="border:0;padding-top:0"><div><h3>${esc(s.name)}</h3>${warn(s)} <span class="mute">${esc(s.client)} ${s.loc ? "· " + esc(s.loc) : ""}</span></div><button class="ghost" data-open="${s.id}">Open</button></div>${bar(prog(s))}<p class="mute" style="margin:6px 0 0">${prog(s)}% done · ${inr(spent(s.id))} spent of ${inr(s.budget)}</p></div>`).join("") : '<div class="empty">Your sites will show up here.</div>'}`;
+      }
+      function detail(s) {
+        return `<p><button class="ghost" data-act="back">Back to sites</button></p>
+  <div class="card"><h2>${esc(s.name)}</h2>${warn(s)}<p class="mute">${esc(s.client)} ${s.loc ? "· " + esc(s.loc) : ""}</p>${bar(prog(s))}
+  <p>${prog(s)}% done · ${inr(spent(s.id))} spent of ${inr(s.budget)}</p><p><b>Received ${inr(pay(s.id, "Received"))}</b> · Profit so far <b class="${pay(s.id, "Received") < spent(s.id) ? "over" : ""}">${inr(pay(s.id, "Received") - spent(s.id))}</b></p><p><a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text=${rep(s)}">Share report on WhatsApp</a></p><button class="del" data-delsite="${s.id}">Delete site and its expenses</button></div>
+  <div class="card"><h2>Work progress</h2>${s.stages.length ? s.stages.map((t, i) => `<div class="line" style="display:block"><div class="line" style="border:0;padding:0"><b>${esc(t.n)}</b><span><output>${t.p}%</output><button class="del" data-delst="${i}" aria-label="Remove stage ${esc(t.n)}">Remove</button></span></div><input type="range" min="0" max="100" step="5" value="${t.p}" data-st="${i}" aria-label="${esc(t.n)} progress"></div>`).join("") : '<div class="empty">No stages yet. Add stages to track progress.</div>'}
+  <form data-form="stage" class="row" style="margin-top:10px"><input name="n" placeholder="New stage, e.g. Waterproofing" aria-label="Stage name" required><button>Add stage</button></form>
+  ${s.stages.length ? "" : '<p><button class="ghost" data-act="std">Add standard stages</button></p>'}</div>`;
+      }
+
+      function expenses() {
+        if (!S.sites.length)
+          return '<div class="empty card">Add a site first, then log expenses against it.<br><br><button data-tab="sites">Add a site</button></div>';
+        const list = S.expenses
+          .filter(
+            (e) =>
+              (flt === "all" || e.site === flt) &&
+              (fc === "all" || e.cat === fc) &&
+              (!q ||
+                (
+                  e.note +
+                  " " +
+                  e.cat +
+                  " " +
+                  sname(e.site) +
+                  " " +
+                  (S.partners[e.by] || "")
+                )
+                  .toLowerCase()
+                  .includes(q)),
+          )
+          .sort((a, b) => b.date.localeCompare(a.date));
+        return `<div class="card"><h2>Add expense</h2><form data-form="exp"><div class="row">
+  <div><label for="s">Site</label><select id="s" name="s">${siteOpts(open)}</select></div>
+  <div><label for="a">Amount (₹)</label><input id="a" name="a" type="number" min="1" inputmode="numeric" required></div>
+  <div><label for="k">Category</label><select id="k" name="k">${opts(CATS.map((c) => [c, c]))}</select></div>
+  <div><label for="p">Paid by</label><select id="p" name="p">${partOpts()}</select></div>
+  <div><label for="d">Date</label><input id="d" name="d" type="date" value="${today()}" required></div>
+  <div><label for="t">Note</label><input id="t" name="t" placeholder="Cement, 50 bags"></div>
+  <div><label for="ep">Receipt photo (optional)</label><input id="ep" name="ph" type="file" accept="image/*"></div></div>
+  <p><button>Save expense</button></p></form></div>
+  <div class="card"><div class="line" style="border:0"><h2 style="margin:0">Expenses</h2><select data-flt aria-label="Filter by site" style="max-width:180px"><option value="all">All sites</option>${siteOpts(flt)}</select></div>
+  <div class="row" style="margin-bottom:8px"><select data-cat aria-label="Filter by category"><option value="all">All categories</option>${opts(
+    CATS.map((c) => [c, c]),
+    fc,
+  )}</select><input type="search" data-q placeholder="Search expenses" aria-label="Search expenses" value="${esc(qr)}"></div>
+  <p class="mute">Total: <b>${inr(list.reduce((a, e) => a + e.amt, 0))}</b></p>
+  ${list.length ? list.map((e) => `<div class="line"><span><b>${inr(e.amt)}</b> <span class="pill">${esc(e.cat)}</span><br><span class="mute">${esc(sname(e.site))} · ${esc(S.partners[e.by] || "")} · ${e.date}${e.note ? " · " + esc(e.note) : ""}</span>${e.photo ? '<img class="rcpt" src="' + e.photo + '" alt="Receipt">' : ""}</span><button class="del" data-delex="${e.id}" aria-label="Delete expense">Delete</button></div>`).join("") : '<div class="empty">No expenses logged.</div>'}</div>`;
+      }
+
+      function meetings() {
+        const ms = [...S.meetings].sort((a, b) => a.dt.localeCompare(b.dt));
+        const perm =
+          "Notification" in window && Notification.permission === "default";
+        return `<div class="card"><h2>Add meeting</h2><form data-form="meet"><div class="row">
+  <div><label for="mt">Title</label><input id="mt" name="t" required></div>
+  <div><label for="ms">Site</label><select id="ms" name="s"><option value="">General</option>${siteOpts()}</select></div>
+  <div><label for="md">Date and time</label><input id="md" name="d" type="datetime-local" required></div>
+  <div><label for="mn">Notes</label><input id="mn" name="n"></div></div>
+  <p><button>Save meeting</button></p></form>
+  <p class="mute">You get a reminder 15 minutes before while this page is open.</p>${perm ? '<button class="ghost" data-act="notif">Allow phone alerts</button>' : ""}</div>
+  <div class="card"><h2>Meetings</h2>${ms.length ? ms.map((m) => `<div class="line"><span><b${m.done ? ' style="text-decoration:line-through"' : ""}>${esc(m.title)}</b><br><span class="mute">${fdt(m.dt)} · ${esc(m.site ? sname(m.site) : "General")}${m.notes ? " · " + esc(m.notes) : ""}</span></span><span><button class="ghost" data-done="${m.id}">${m.done ? "Reopen" : "Done"}</button><button class="del" data-delm="${m.id}" aria-label="Delete meeting">Delete</button></span></div>`).join("") : '<div class="empty">No meetings yet.</div>'}</div>`;
+      }
+
+      const money = () => expenses() + payments();
+      function payments() {
+        if (!S.sites.length) return "";
+        const lab = {};
+        S.expenses
+          .filter((e) => e.cat === "Labour")
+          .forEach((e) => {
+            const n = e.note || "No name in note";
+            lab[n] = (lab[n] || 0) + e.amt;
+          });
+        const pl = [...S.payments].sort((a, b) => b.date.localeCompare(a.date));
+        return `<div class="card"><h2>Client payments</h2><form data-form="pay"><div class="row">
+  <div><label for="ys">Site</label><select id="ys" name="s">${siteOpts()}</select></div>
+  <div><label for="yk">Type</label><select id="yk" name="k">${opts(PK.map((c) => [c, c]))}</select></div>
+  <div><label for="ya">Amount (₹)</label><input id="ya" name="a" type="number" min="1" inputmode="numeric" required></div>
+  <div><label for="yd">Date</label><input id="yd" name="d" type="date" value="${today()}" required></div></div>
+  <p><button>Save payment</button></p></form></div>
+  <div class="card"><h2>Pending from clients</h2>${S.sites.map((s) => `<div class="line"><span><b>${esc(s.name)}</b><br><span class="mute">Billed ${inr(pay(s.id, "Billed"))} · Received ${inr(pay(s.id, "Received"))} · Retention held ${inr(pay(s.id, "Retention held"))}</span></span><b>${inr(pay(s.id, "Billed") - pay(s.id, "Received"))}</b></div>`).join("")}
+  ${pl.map((p) => `<div class="line"><span>${esc(sname(p.site))} <span class="pill">${esc(p.kind)}</span><br><span class="mute">${p.date}</span></span><span><b>${inr(p.amt)}</b><button class="del" data-del="payments:${p.id}" aria-label="Delete payment">Delete</button></span></div>`).join("")}</div>
+  ${
+    Object.keys(lab).length
+      ? `<div class="card"><h2>Labour paid</h2><p class="mute">Grouped by the note on Labour expenses. Type the worker or gang name there.</p>${Object.entries(
+          lab,
+        )
+          .map(
+            ([n, a]) =>
+              `<div class="line"><span>${esc(n)}</span><b>${inr(a)}</b></div>`,
+          )
+          .join("")}</div>`
+      : ""
+  }`;
+      }
+      function logv() {
+        if (!S.sites.length)
+          return '<div class="empty card">Add a site first.<br><br><button data-tab="sites">Add a site</button></div>';
+        const ls = [...S.logs].sort((a, b) => b.date.localeCompare(a.date));
+        return `<div class="card"><h2>Daily site log</h2><form data-form="log"><div class="row">
+  <div><label for="gs">Site</label><select id="gs" name="s">${siteOpts()}</select></div>
+  <div><label for="gd">Date</label><input id="gd" name="d" type="date" value="${today()}" required></div>
+  <div><label for="gw">Weather</label><select id="gw" name="w">${opts(["Sunny", "Cloudy", "Rain"].map((x) => [x, x]))}</select></div>
+  <div><label for="gl">Workers on site</label><input id="gl" name="l" type="number" min="0" inputmode="numeric"></div></div>
+  <label for="gt" style="margin-top:10px">Work done today</label><textarea id="gt" name="t" rows="3" required></textarea>
+  <label for="gp" style="margin-top:10px">Photos (up to 3)</label><input id="gp" name="ph" type="file" accept="image/*" multiple>
+  <p><button>Save log</button></p></form></div>
+  ${ls.length ? ls.map((l) => `<div class="card"><div class="line" style="border:0;padding-top:0"><b>${esc(sname(l.site))}</b><span class="mute">${l.date} · ${esc(l.w)} · ${l.l} workers</span></div><p style="margin:0 0 8px">${esc(l.t)}</p><div class="row">${l.photos.map((x) => `<img src="${x}" alt="Site photo" style="flex:0 1 31%;max-width:31%;border-radius:6px">`).join("")}</div><button class="del" data-del="logs:${l.id}">Delete log</button></div>`).join("") : '<div class="empty">No logs yet. Save one entry a day to keep proof of work.</div>'}`;
+      }
+      function tasksv() {
+        const ts = [...S.tasks].sort(
+          (a, b) =>
+            a.done - b.done || (a.due || "9").localeCompare(b.due || "9"),
+        );
+        return `<div class="card"><h2>Tasks and snags</h2><form data-form="task"><div class="row">
+  <div><label for="tt">What needs doing</label><input id="tt" name="t" required></div>
+  <div><label for="tk">Type</label><select id="tk" name="k">${opts(TK.map((c) => [c, c]))}</select></div>
+  <div><label for="ts">Site</label><select id="ts" name="s"><option value="">General</option>${siteOpts()}</select></div>
+  <div><label for="to">Owner</label><select id="to" name="o">${partOpts()}</select></div>
+  <div><label for="td">Due date</label><input id="td" name="d" type="date"></div></div><p><button>Save task</button></p></form></div>
+  <div class="card"><h2>Open and done</h2>${ts.length ? ts.map((t) => `<div class="line"><span><b${t.done ? ' style="text-decoration:line-through"' : ""}>${esc(t.t)}</b> <span class="pill">${esc(t.k)}</span><br><span class="mute ${!t.done && t.due && t.due < today() ? "over" : ""}">${esc(S.partners[t.o] || "")} · ${t.s ? esc(sname(t.s)) : "General"}${t.due ? " · due " + t.due : ""}</span></span><span><button class="ghost" data-tdone="${t.id}">${t.done ? "Reopen" : "Done"}</button><button class="del" data-del="tasks:${t.id}" aria-label="Delete task">Delete</button></span></div>`).join("") : '<div class="empty">Nothing here. Add a task, a defect, or a payment due date.</div>'}</div>`;
+      }
+      function contacts() {
+        return `<div class="card"><h2>Contacts</h2><form data-form="con"><div class="row">
+  <div><label for="cn">Name</label><input id="cn" name="n" required></div>
+  <div><label for="cr">Role</label><input id="cr" name="r" placeholder="Client, vendor, engineer"></div>
+  <div><label for="cp">Phone</label><input id="cp" name="p" type="tel" inputmode="tel" required></div></div><p><button>Save contact</button></p></form>
+  ${S.contacts
+    .map((c) => {
+      const ph = c.p.replace(/[^\d+]/g, ""),
+        wa = ph.length === 10 ? "91" + ph : ph.replace("+", "");
+      return `<div class="line"><span><b>${esc(c.n)}</b><br><span class="mute">${esc(c.r)} · ${esc(c.p)}</span></span><span class="row" style="flex:0 0 auto;flex-wrap:nowrap"><a class="btn" href="tel:${ph}">Call</a><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${wa}">WhatsApp</a><button class="del" data-del="contacts:${c.id}">Delete</button></span></div>`;
+    })
+    .join("")}</div>`;
+      }
+      const TABS = [
+        ["home", "Overview", "M3 11l9-8 9 8M5 9.5V20h5v-6h4v6h5V9.5"],
+        ["sites", "Sites", "M3 21h18M6 21V7l6-4 6 4v14M10 10h4M10 14h4"],
+        [
+          "money",
+          "Money",
+          "M3 7a2 2 0 0 1 2-2h13v3M3 7v11a2 2 0 0 0 2 2h16V8H5a2 2 0 0 1-2-2zM17 14h.01",
+        ],
+        ["log", "Log", "M9 3h6v3H9zM7 5H5v16h14V5h-2M8 11h8M8 15h5"],
+        [
+          "tasks",
+          "Tasks",
+          "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12l3 3 5-6",
+        ],
+        ["meet", "Meetings", "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"],
+      ];
+      function render() {
+        $("#nav").innerHTML = TABS.map(
+          ([k, l, d]) =>
+            `<button data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg></span>${l}</button>`,
+        ).join("");
+        $("#v").innerHTML = {
+          home,
+          sites,
+          money,
+          log: logv,
+          tasks: tasksv,
+          meet: () => meetings() + contacts(),
+        }[tab]();
+      }
+      function toast(m) {
+        const t = $("#toast");
+        t.textContent = m;
+        t.style.display = "block";
+        clearTimeout(toast.t);
+        toast.t = setTimeout(() => (t.style.display = "none"), 6000);
+      }
+      const go = () => {
+        save();
+        render();
+      };
+
+      document.addEventListener("click", (e) => {
+        if (e.target.matches(".rcpt")) {
+          e.target.classList.toggle("big");
+          return;
+        }
+        const b = e.target.closest("button");
+        if (!b) return;
+        const d = b.dataset;
+        if (d.tab) {
+          tab = d.tab;
+          if (tab !== "sites") open = null;
+          render();
+          scrollTo(0, 0);
+        } else if (d.open) {
+          open = d.open;
+          go();
+        } else if (d.act === "back") {
+          open = null;
+          render();
+        } else if (d.act === "std") {
+          S.sites.find((s) => s.id === open).stages = STD.map((n) => ({
+            n,
+            p: 0,
+          }));
+          go();
+        } else if (d.act === "backup") {
+          backup();
+        } else if (d.act === "notif") {
+          Notification.requestPermission().then(render);
+        } else if (d.act === "partners") {
+          S.partners = S.partners.map(
+            (p, i) =>
+              (prompt("Name of partner " + (i + 1), p) || p).trim() || p,
+          );
+          go();
+        } else if (d.delst !== undefined) {
+          S.sites.find((s) => s.id === open).stages.splice(+d.delst, 1);
+          go();
+        } else if (d.delsite) {
+          if (confirm("Delete this site and all its expenses?")) {
+            S.sites = S.sites.filter((s) => s.id !== d.delsite);
+            S.expenses = S.expenses.filter((x) => x.site !== d.delsite);
+            S.payments = S.payments.filter((x) => x.site !== d.delsite);
+            S.logs = S.logs.filter((x) => x.site !== d.delsite);
+            open = null;
+            go();
+          }
+        } else if (d.delex) {
+          S.expenses = S.expenses.filter((x) => x.id !== d.delex);
+          go();
+        } else if (d.delm) {
+          S.meetings = S.meetings.filter((x) => x.id !== d.delm);
+          go();
+        } else if (d.del) {
+          const [c, i] = d.del.split(":");
+          S[c] = S[c].filter((x) => x.id !== i);
+          go();
+        } else if (d.tdone) {
+          const t = S.tasks.find((x) => x.id === d.tdone);
+          t.done = !t.done;
+          go();
+        } else if (d.done) {
+          const m = S.meetings.find((x) => x.id === d.done);
+          m.done = !m.done;
+          go();
+        }
+      });
+      document.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t.dataset.st !== undefined) {
+          S.sites.find((s) => s.id === open).stages[+t.dataset.st].p = +t.value;
+          go();
+        } else if (t.hasAttribute("data-flt")) {
+          flt = t.value;
+          render();
+        } else if (t.hasAttribute("data-cat")) {
+          fc = t.value;
+          render();
+        }
+      });
+      document.addEventListener("input", (e) => {
+        const t = e.target;
+        if (t.type === "range")
+          t.parentNode.querySelector("output").textContent = t.value + "%";
+        else if (t.hasAttribute("data-q")) {
+          qr = t.value;
+          q = qr.toLowerCase();
+          const c = t.selectionStart;
+          render();
+          const n = $("[data-q]");
+          n.focus();
+          n.setSelectionRange(c, c);
+        }
+      });
+      document.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const f = e.target,
+          k = f.dataset.form,
+          v = Object.fromEntries(new FormData(f));
+        if (k === "name") {
+          window.setName && window.setName(v.n.trim());
+          return;
+        }
+        if (k === "site")
+          S.sites.push({
+            id: uid(),
+            name: v.n.trim(),
+            client: v.c.trim(),
+            loc: v.l.trim(),
+            budget: +v.b,
+            stages: [],
+          });
+        if (k === "stage")
+          S.sites
+            .find((s) => s.id === open)
+            .stages.push({ n: v.n.trim(), p: 0 });
+        if (k === "exp") {
+          const fl = f.elements.ph.files[0];
+          Promise.resolve(fl ? shrink(fl) : null).then((ph) => {
+            const x = {
+              id: uid(),
+              site: v.s,
+              amt: +v.a,
+              cat: v.k,
+              by: +v.p,
+              date: v.d,
+              note: v.t.trim(),
+            };
+            if (ph) x.photo = ph;
+            S.expenses.push(x);
+            toast("Expense saved");
+            go();
+          });
+          return;
+        }
+        if (k === "meet")
+          S.meetings.push({
+            id: uid(),
+            title: v.t.trim(),
+            site: v.s,
+            dt: v.d,
+            notes: v.n.trim(),
+            done: false,
+          });
+        if (k === "pay")
+          S.payments.push({
+            id: uid(),
+            site: v.s,
+            kind: v.k,
+            amt: +v.a,
+            date: v.d,
+          });
+        if (k === "task")
+          S.tasks.push({
+            id: uid(),
+            t: v.t.trim(),
+            k: v.k,
+            s: v.s,
+            o: +v.o,
+            due: v.d,
+            done: false,
+          });
+        if (k === "con")
+          S.contacts.push({
+            id: uid(),
+            n: v.n.trim(),
+            r: v.r.trim(),
+            p: v.p.trim(),
+          });
+        if (k === "log") {
+          Promise.all([...f.elements.ph.files].slice(0, 3).map(shrink)).then(
+            (ph) => {
+              S.logs.push({
+                id: uid(),
+                site: v.s,
+                date: v.d,
+                w: v.w,
+                l: +v.l || 0,
+                t: v.t.trim(),
+                photos: ph.filter(Boolean),
+              });
+              go();
+            },
+          );
+          return;
+        }
+        go();
+      });
+
+      const fired = new Set();
+      function check() {
+        const now = Date.now();
+        S.meetings.forEach((m) => {
+          if (m.done || fired.has(m.id)) return;
+          const diff = new Date(m.dt) - now;
+          if (diff <= 15 * 60000 && diff > -3600000) {
+            fired.add(m.id);
+            toast("Meeting soon: " + m.title + " at " + fdt(m.dt));
+            try {
+              if (
+                "Notification" in window &&
+                Notification.permission === "granted"
+              )
+                new Notification("Meeting soon", { body: m.title });
+            } catch (e) {}
+          }
+        });
+      }
+      setInterval(check, 30000);
+      check();
+      if ("serviceWorker" in navigator)
+        addEventListener("load", () =>
+          navigator.serviceWorker.register("sw.js").catch(() => {}),
+        );
+      render();
+    </script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        updateProfile,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        setDoc,
+        deleteDoc,
+        onSnapshot,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+      // 1. Paste your Firebase web app config here (see README.md)
+      const cfg = {
+        apiKey: "AIzaSyBixhG8LOOWH7RdyJSIGraPJPlQYLMynZU",
+        authDomain: "site-ledger-a4b7f.firebaseapp.com",
+        projectId: "site-ledger-a4b7f",
+        appId: "1:710811841023:web:5c74f7d517fc59183337ca",
+      };
+      const app = initializeApp(cfg),
+        auth = getAuth(app),
+        db = getFirestore(app);
+      const COLS = [
+        "sites",
+        "expenses",
+        "meetings",
+        "payments",
+        "logs",
+        "tasks",
+        "contacts",
+      ];
+      const J = (v) =>
+        JSON.stringify(v, (k, x) =>
+          x && typeof x === "object" && !Array.isArray(x)
+            ? Object.fromEntries(Object.entries(x).sort())
+            : x,
+        );
+      const remote = {};
+      COLS.forEach((c) => (remote[c] = {}));
+      let unsubs = [],
+        partnersReady = false,
+        dirty = false;
+      const typing = () =>
+        /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+      const draw = () => (typing() ? (dirty = true) : render());
+      document.addEventListener("focusout", () =>
+        setTimeout(() => {
+          if (dirty && !typing()) {
+            dirty = false;
+            render();
+          }
+        }, 0),
+      );
+      function listen() {
+        COLS.forEach((c) =>
+          unsubs.push(
+            onSnapshot(
+              collection(db, c),
+              (snap) => {
+                remote[c] = {};
+                S[c] = snap.docs.map((d) => {
+                  remote[c][d.id] = J(d.data());
+                  return d.data();
+                });
+                draw();
+              },
+              (e) => toast("Cannot read data: " + e.code),
+            ),
+          ),
+        );
+        unsubs.push(
+          onSnapshot(doc(db, "meta", "partners"), (d) => {
+            if (d.exists()) S.partners = d.data().names;
+            partnersReady = true;
+            draw();
+          }),
+        );
+      }
+      syncHook = () => {
+        COLS.forEach((c) => {
+          const seen = {};
+          S[c].forEach((it) => {
+            seen[it.id] = 1;
+            const j = J(it);
+            if (remote[c][it.id] !== j) {
+              remote[c][it.id] = j;
+              setDoc(doc(db, c, it.id), it).catch((e) =>
+                toast("Could not save: " + e.code),
+              );
+            }
+          });
+          Object.keys(remote[c]).forEach((id) => {
+            if (!seen[id]) {
+              delete remote[c][id];
+              deleteDoc(doc(db, c, id)).catch((e) =>
+                toast("Could not delete: " + e.code),
+              );
+            }
+          });
+        });
+        if (partnersReady)
+          setDoc(doc(db, "meta", "partners"), { names: S.partners }).catch(
+            () => {},
+          );
+      };
+      const byId = (id) => document.getElementById(id);
+      const letterAv = (n) =>
+        "data:image/svg+xml," +
+        encodeURIComponent(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><rect width='40' height='40' fill='#1a73e8'/><text x='50%' y='54%' fill='white' font-size='20' font-family='Arial' text-anchor='middle' dominant-baseline='middle'>${(n[0] || "?").toUpperCase()}</text></svg>`,
+        );
+
+      function showUser(u) {
+        const box = byId("usr");
+        if (!u) {
+          box.hidden = true;
+          byId("um").hidden = true;
+          return;
+        }
+        const raw = u.displayName || u.email.split("@")[0];
+        const name = raw
+          .replace(/[._-]+/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        let seed = u.email;
+        try {
+          seed = localStorage.getItem("av-" + u.uid) || u.email;
+        } catch (e) {}
+        const img = byId("ua");
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = letterAv(name);
+        };
+        img.src =
+          "https://api.dicebear.com/9.x/lorelei/svg?backgroundColor=ffd5dc,b6e3f4,c0aede,ffdfbf&backgroundType=gradientLinear&radius=35&seed=" +
+          encodeURIComponent(seed);
+        byId("un").textContent = name;
+        byId("umn").textContent = name;
+        byId("ue").textContent = u.email;
+        byId("uma").src = img.src;
+        box.hidden = false;
+      }
+
+      byId("ub").addEventListener("click", (e) => {
+        e.stopPropagation();
+        const m = byId("um");
+        m.hidden = !m.hidden;
+        byId("ub").setAttribute("aria-expanded", String(!m.hidden));
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest("#usr")) byId("um").hidden = true;
+        else if (e.target.closest(".usr-menu button")) byId("um").hidden = true;
+      });
+      byId("ush").addEventListener("click", () => {
+        const u = auth.currentUser;
+        try {
+          localStorage.setItem(
+            "av-" + u.uid,
+            Math.random().toString(36).slice(2, 8),
+          );
+        } catch (e) {}
+        showUser(u);
+      });
+
+      // theme
+      const setTheme = (t) => {
+        document.documentElement.dataset.theme = t;
+        try {
+          localStorage.setItem("theme", t);
+        } catch (e) {}
+      };
+      let saved = null;
+      try {
+        saved = localStorage.getItem("theme");
+      } catch (e) {}
+      setTheme(
+        saved ||
+          (matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light"),
+      );
+      byId("tg").addEventListener("click", () =>
+        setTheme(
+          document.documentElement.dataset.theme === "dark" ? "light" : "dark",
+        ),
+      );
+      const L = document.getElementById("login");
+      onAuthStateChanged(auth, (u) => {
+        unsubs.forEach((f) => f());
+        unsubs = [];
+        partnersReady = false;
+        ME = (u && u.displayName) || "";
+        showUser(u);
+        COLS.forEach((c) => {
+          S[c] = [];
+          remote[c] = {};
+        });
+        if (u) {
+          L.style.display = "none";
+          listen();
+        } else {
+          L.style.display = "flex";
+        }
+        render();
+      });
+      document.getElementById("lf").addEventListener("submit", async (e) => {
+        const f = e.target;
+        document.getElementById("le").textContent = "";
+        try {
+          await signInWithEmailAndPassword(auth, f.em.value.trim(), f.pw.value);
+        } catch (err) {
+          document.getElementById("le").textContent =
+            "Wrong email or password.";
+        }
+      });
+      window.setName = async (n) => {
+        try {
+          await updateProfile(auth.currentUser, { displayName: n });
+          ME = n;
+          showUser(auth.currentUser);
+          render();
+        } catch (e) {
+          toast("Could not save your name");
+        }
+      };
+      document
+        .getElementById("so")
+        .addEventListener("click", () => signOut(auth));
+    </script>
+  </body>
+</html>
